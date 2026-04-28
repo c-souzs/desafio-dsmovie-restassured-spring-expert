@@ -12,7 +12,15 @@ public class TokenUtil {
 	public static String obtainAccessToken(String username, String password) throws JSONException {
 		Response response = authRequest(username, password);
 		JsonPath jsonBody = response.jsonPath();
-		return jsonBody.getString("access_token");
+		String token = jsonBody.getString("access_token");
+		if (token == null) {
+			throw new RuntimeException(
+				"Failed to obtain access token for user '" + username + "'. " +
+				"HTTP status: " + response.getStatusCode() + ". " +
+				"Response body: " + response.getBody().asString()
+			);
+		}
+		return token;
 	}
 	
 	private static Response authRequest(String username, String password) {
